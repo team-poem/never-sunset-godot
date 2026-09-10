@@ -52,3 +52,10 @@ test('RiskyChoice: Q at the curtain keeps the risky path available without a cho
   assert.equal(result.exposure,1);
   assert.equal(result.look_count,1);
 });
+
+test('DarkApartment: ambient fill is reduced while practical light and the existing field of view remain', () => {
+  const result=atmosphere('darkness');
+  assert(result.ambient >= 0.05 && result.ambient <= 0.18);
+  assert.equal(result.local_light,true);
+  assert.equal(result.fov,68);
+});

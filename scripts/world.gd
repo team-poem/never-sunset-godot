@@ -316,7 +316,7 @@ func _environment(dawn: bool) -> void:
 	settings.background_color = Color("a6b5aa") if dawn else Color("283c35")
 	settings.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	settings.ambient_light_color = Color("bcc8b5") if dawn else Color("a0b0a0")
-	settings.ambient_light_energy = 0.6 if dawn else 0.42
+	settings.ambient_light_energy = 0.6 if dawn else (0.12 if _mode == "apartment" else 0.42)
 	settings.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	environment.environment = settings
 	add_child(environment)

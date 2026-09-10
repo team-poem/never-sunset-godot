@@ -270,7 +270,7 @@ test('RiskyChoice: Q at the curtain keeps the risky path available without a cho
 });
 ```
 
-- [ ] DarkApartment — see the exact assertion below
+- [x] DarkApartment — see the exact assertion below
 
 ```js
 test('DarkApartment: ambient fill is reduced while practical light and the existing field of view remain', () => {

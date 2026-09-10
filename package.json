@@ -1,0 +1,1 @@
+{"name":"never-sunset-godot","version":"0.1.0","private":true,"type":"module","scripts":{"test":"node --test tests/*.test.js","start":"tools/godot.sh --path .","export:web":"tools/export-web.sh","serve":"node tools/serve.mjs"}}

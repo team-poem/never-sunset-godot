@@ -213,7 +213,7 @@ test('ContinuousEntry: homecoming begins with narration while walking remains av
 });
 ```
 
-- [ ] WorldObservation — see the exact assertion below
+- [x] WorldObservation — see the exact assertion below
 
 ```js
 test('WorldObservation: observing the mark and photo records memories without a modal', () => {

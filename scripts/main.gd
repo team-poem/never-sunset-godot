@@ -229,7 +229,11 @@ func _interact(id: String):
 		story.apply_action(id)
 		_save()
 		var contents = Content.inspect(id, story.snapshot())
-		_show_page(contents)
+		if id in ["mark","photo"]:
+			_say(contents.get("body", ""), 14.0)
+			_update_hud()
+		else:
+			_show_page(contents)
 		return
 	if id in ["worn","new"]:
 		var name = "닳은 열쇠" if id == "worn" else "새 열쇠"

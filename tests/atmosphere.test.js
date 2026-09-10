@@ -15,3 +15,10 @@ test('ContinuousEntry: homecoming begins with narration while walking remains av
   assert.equal(result.continuous,true);
   assert.equal(result.narration,true);
 });
+
+test('WorldObservation: observing the mark and photo records memories without a modal', () => {
+  const result=atmosphere('observe');
+  assert.equal(result.continuous,true);
+  assert(result.memories.includes('mark'));
+  assert(result.memories.includes('photo'));
+});

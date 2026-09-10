@@ -144,7 +144,7 @@ test('CupEscapeMemory: dismissing an inspected cup with Esc preserves the memory
 });
 ```
 
-- [ ] CupEscapeReturn — actual scene integration
+- [x] CupEscapeReturn — actual scene integration
 
 ```js
 test('CupEscapeReturn: Esc after examining the replacement advances the discovery', () => {

@@ -14,3 +14,7 @@ test('CupEscapeMemory: dismissing an inspected cup with Esc preserves the memory
   assert(result.memories.includes('mug'));
   assert.equal(result.mode,'play');
 });
+
+test('CupEscapeReturn: Esc after examining the replacement advances the discovery', () => {
+  assert.equal(integration('cup_return_escape').phase,'dusk');
+});

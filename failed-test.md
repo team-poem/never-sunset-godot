@@ -152,7 +152,7 @@ test('CupEscapeReturn: Esc after examining the replacement advances the discover
 });
 ```
 
-- [ ] PendingOutcome — actual scene integration
+- [x] PendingOutcome — actual scene integration
 
 ```js
 test('PendingOutcome: save and resume preserves an unacknowledged narrative', () => {

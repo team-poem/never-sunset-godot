@@ -18,3 +18,12 @@ test('CupEscapeMemory: dismissing an inspected cup with Esc preserves the memory
 test('CupEscapeReturn: Esc after examining the replacement advances the discovery', () => {
   assert.equal(integration('cup_return_escape').phase,'dusk');
 });
+
+test('PendingOutcome: save and resume preserves an unacknowledged narrative', () => {
+  const result=integration('pending_outcome');
+  assert.equal(result.pending,'wash');
+  assert.equal(result.acknowledged,'');
+  assert.equal(result.restored,true);
+  assert.equal(result.mode,'dialog');
+  assert.equal(result.title,'손을 닦았다');
+});

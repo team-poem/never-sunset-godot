@@ -30,6 +30,7 @@ var previous_speed: float = 0.0
 var auto_save_time: float = 0.0
 var saved_available: bool = false
 var dialog_return_mode: String = "play"
+var pending_action: String = ""
 var qa_mode: bool = OS.get_cmdline_user_args().has("--qa-no-save")
 
 func _ready():
@@ -208,6 +209,9 @@ func _return_to_game():
 	if story.phase == "ending":
 		_show_ending()
 		return
+	if not pending_action.is_empty():
+		pending_action = ""
+		_save()
 	ui.show_game()
 	_apply_mode("play")
 
@@ -261,6 +265,8 @@ func _on_action(action: String):
 		_create_world()
 	else:
 		world.apply_story(story.phase, story.exposure)
+	var page = Content.outcome(action, story.snapshot())
+	pending_action = action if story.phase != "ending" and not (action == "mug" and old_phase == "home") and not page.get("body", "").is_empty() else ""
 	_save()
 	_update_hud()
 	_update_audio()
@@ -271,7 +277,6 @@ func _on_action(action: String):
 		_say("손잡이를 오른쪽으로 두면, 빠진 자리는 왼쪽.", 5.0)
 		_return_to_game()
 		return
-	var page = Content.outcome(action, story.snapshot())
 	if page.get("body", "").is_empty():
 		_return_to_game()
 	else:
@@ -292,6 +297,7 @@ func _on_command(command: String):
 
 func _start_new():
 	story = State.new()
+	pending_action = ""
 	extra_step_done = false
 	_create_world()
 	_save()
@@ -316,18 +322,38 @@ func _resume():
 	if stored == null:
 		_start_new()
 		return
-	story.restore_state(JSON.stringify(stored.story))
+	_restore_snapshot(stored)
+
+func _restore_snapshot(stored: Dictionary) -> bool:
+	var verified = State.new()
+	if not stored.get("story") is Dictionary or not verified.restore_state(JSON.stringify(stored.story)):
+		return false
+	story = verified
+	dialog_return_mode = "play"
+	pending_action = ""
 	_create_world()
 	var position_data = stored.get("position", [])
-	if position_data is Array and position_data.size() == 3:
+	if position_data is Array and position_data.size() == 3 and position_data.all(func(value): return value is float or value is int):
 		var point = Vector3(float(position_data[0]),float(position_data[1]),float(position_data[2]))
 		if point.is_finite() and absf(point.x) < 20 and absf(point.z) < 20 and point.y > -1 and point.y < 6:
 			player.position = point
-	var yaw = float(stored.get("yaw", 0))
-	var pitch = float(stored.get("pitch", 0))
+	var yaw_value = stored.get("yaw", 0)
+	var pitch_value = stored.get("pitch", 0)
+	var yaw = float(yaw_value) if yaw_value is float or yaw_value is int else 0.0
+	var pitch = float(pitch_value) if pitch_value is float or pitch_value is int else 0.0
 	if is_finite(yaw) and is_finite(pitch): player.set_view(yaw, clampf(pitch,-1.25,1.25))
+	var pending = stored.get("pending_action", "")
+	if pending is String and not story.history.is_empty() and pending == story.history.back():
+		pending_action = pending
+	_apply_mode("play")
 	if story.phase == "ending": _show_ending()
+	elif not pending_action.is_empty(): _show_page(Content.outcome(pending_action, story.snapshot()))
 	else: _return_to_game()
+	return true
+
+func _capture_save() -> Dictionary:
+	var point = player.position
+	return {"story":story.snapshot(),"position":[point.x,point.y,point.z],"yaw":player.rotation.y,"pitch":player.pitch,"pending_action":pending_action}
 
 func _save():
 	if qa_mode: return
@@ -336,8 +362,7 @@ func _save():
 	if file == null:
 		if ui: _say("이 환경에서는 자동 저장을 사용할 수 없습니다.", 5)
 		return
-	var point = player.position
-	file.store_string(JSON.stringify({"story":story.snapshot(),"position":[point.x,point.y,point.z],"yaw":player.rotation.y,"pitch":player.pitch}))
+	file.store_string(JSON.stringify(_capture_save()))
 	file.close()
 
 func _load_settings():

@@ -10,6 +10,7 @@ var _elapsed: float = 0.0
 var _cup: Node3D
 var _bandage: Node3D
 var _curtains: Array[Node3D] = []
+var _curtain_tween: Tween
 var _reverse_shadows: Node3D
 var _sink_pot: Node3D
 var _wallpad_screen: Node3D
@@ -197,7 +198,10 @@ func room_at(point: Vector3) -> String:
 		return "현관"
 	return "거실"
 
-func apply_story(phase: String, exposure: int) -> void:
+func curtains_closing() -> bool:
+	return _curtain_tween != null and _curtain_tween.is_running()
+
+func apply_story(phase: String, exposure: int, animate_curtains: bool = false) -> void:
 	_phase = phase
 	if _mode != "apartment":
 		return
@@ -207,11 +211,22 @@ func apply_story(phase: String, exposure: int) -> void:
 	_make_mug(-1 if phase == "home" else (1 if late else 0))
 	if is_instance_valid(_bandage):
 		_bandage.position.x = -0.115 if phase == "home" else 0.115
-	for i in range(_curtains.size()):
-		_curtains[i].position.x = -3.51 if i == 0 else -1.49
-		_curtains[i].scale.x = 1.0 if curtains_closed else 0.27
-		if not curtains_closed:
-			_curtains[i].position.x = -4.65 if i == 0 else -0.35
+	if not curtains_closed and curtains_closing():
+		_curtain_tween.kill()
+	# Reapplying story state during the pull must not snap or restart the panels.
+	if not curtains_closing():
+		if animate_curtains and curtains_closed:
+			_curtain_tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		for i in range(_curtains.size()):
+			var panel = _curtains[i]
+			var target_x = (-3.51 if i == 0 else -1.49) if curtains_closed else (-4.65 if i == 0 else -0.35)
+			var target_scale = 1.0 if curtains_closed else 0.27
+			if animate_curtains and curtains_closed:
+				_curtain_tween.tween_property(panel, "position:x", target_x, 2.4)
+				_curtain_tween.tween_property(panel, "scale:x", target_scale, 2.4)
+			else:
+				panel.position.x = target_x
+				panel.scale.x = target_scale
 	_reverse_shadows.visible = sunset
 	_sink_pot.visible = phase in ["signal", "pulse", "escape"]
 	_wallpad_map.visible = phase == "signal"

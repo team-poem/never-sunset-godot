@@ -235,7 +235,7 @@ test('HeldCup: the cup is held in the world with walking enabled and Esc records
 });
 ```
 
-- [ ] MovingCurtain — see the exact assertion below
+- [x] MovingCurtain — see the exact assertion below
 
 ```js
 test('MovingCurtain: primary interaction visibly closes curtains once while movement stays enabled', () => {

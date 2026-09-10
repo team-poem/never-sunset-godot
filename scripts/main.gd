@@ -231,6 +231,12 @@ func _interact(id: String):
 		_on_action("mug")
 		return
 	if id.is_empty(): return
+	if id == "curtain":
+		if story.phase == "dusk":
+			_on_action("seal")
+		elif not world.curtains_closing():
+			_say(Content.inspect(id, story.snapshot()).get("body", ""), 14.0)
+		return
 	if id == "mug":
 		_inspect_mug()
 		return
@@ -287,14 +293,20 @@ func _on_action(action: String):
 	if old_phase != story.phase and story.phase in ["landing","threshold","ending"]:
 		_create_world()
 	else:
-		world.apply_story(story.phase, story.exposure)
+		world.apply_story(story.phase, story.exposure, action == "seal")
 	var page = Content.outcome(action, story.snapshot())
 	pending_action = action if story.phase != "ending" and not (action == "mug" and old_phase == "home") and not page.get("body", "").is_empty() else ""
+	if action == "seal": pending_action = ""
 	_save()
 	_update_hud()
 	_update_audio()
 	if story.phase == "ending":
 		_show_ending()
+		return
+	if action == "seal":
+		ui.show_game()
+		_apply_mode("play")
+		_say(page.get("body", ""), 14.0)
 		return
 	if action == "mug" and old_phase == "home":
 		_say("손잡이를 오른쪽으로 두면, 빠진 자리는 왼쪽.", 5.0)

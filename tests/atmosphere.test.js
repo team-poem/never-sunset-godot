@@ -29,3 +29,11 @@ test('HeldCup: the cup is held in the world with walking enabled and Esc records
   assert(result.held_meshes > 0);
   assert.equal(result.collected,true);
 });
+
+test('MovingCurtain: primary interaction visibly closes curtains once while movement stays enabled', () => {
+  const result=atmosphere('curtain');
+  assert.equal(result.animated,true);
+  assert.equal(result.continuous,true);
+  assert.equal(result.phase,'drain');
+  assert.equal(result.commits,1);
+});

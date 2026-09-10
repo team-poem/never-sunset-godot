@@ -1,0 +1,11 @@
+// file: tests/atmosphere.test.js
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {execFileSync} from 'node:child_process';
+function atmosphere(name) {
+  const output=execFileSync('./tools/godot.sh',['--headless','--path','.','--script','res://drafts/atmosphere/scene_probe.gd','--',name,'--qa-no-save'],{encoding:'utf8',timeout:25000});
+  assert(!output.includes('SCRIPT ERROR'),'The actual scene probe must execute without script errors');
+  const line=output.split('\n').find(value=>value.startsWith('ATMOSPHERE_JSON:'));
+  assert(line,'Actual Godot scene must return evidence');
+  return JSON.parse(line.slice(16));
+}

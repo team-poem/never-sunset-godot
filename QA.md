@@ -34,3 +34,7 @@ The game is a complete compact narrative implementation with original simple geo
 ## Diagnostic notes
 
 macOS sandboxed headless tests print a certificate lookup warning; this does not fail gameplay or tests. The early cup integration probe terminated before audio thread cleanup, producing two resource warnings; a 0.2-second teardown grace period removes them. Independent full-flow probes reported no gameplay errors.
+
+## Final gate
+
+Sobaya gate PASS: 14 checked entries, 14 passing tests, 21 implementation commits since the recorded loop baseline, no existing test lines modified, every checked test retained verbatim. Release ZIP integrity check passed; all 11 expected output entries are readable, including HTML/JS/WASM/PCK and license notices. Final ZIP size: 17,244,819 bytes.

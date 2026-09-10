@@ -3,7 +3,7 @@
 First-person Korean atmospheric horror, Godot 4 / GDScript / Compatibility renderer.
 
 - Run: tools/godot.sh --path .
-- Test: npm test
+- Test: `npm test`
 - Lint: tools/godot.sh --headless --path . --editor --import --quit
 - Skills: none
 

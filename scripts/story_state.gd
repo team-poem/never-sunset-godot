@@ -9,13 +9,13 @@ var voice: bool = false
 var notice: bool = false
 var visited_elevator: bool = false
 var ending: String = ""
-var rules: Dictionary = {"home:wash": {"next": "return"}}
+var rules: Dictionary = {"return:mug":{"next":"dusk"}, "dusk:seal":{"next":"drain"}, "drain:cover":{"next":"signal"},"home:wash": {"next": "return"}}
 
 func snapshot() -> Dictionary:
 	return {"version":1, "phase":phase, "memories":memories.duplicate(), "history":history.duplicate(), "exposure":exposure, "report":report, "voice":voice, "notice":notice, "visited_elevator":visited_elevator, "ending":ending}
 
 func mug_state() -> String:
-	return "left" if phase == "home" else "smooth"
+	return "left" if phase == "home" else ("smooth" if phase in ["return","dusk","drain"] else "right")
 
 func apply_action(action: String) -> bool:
 	if phase == "ending":

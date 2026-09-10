@@ -31,7 +31,7 @@ test('HomeMemory: washing requires three distinct baseline memories', () => {
 });
 ```
 
-- [ ] UncannyReturn — revisiting the mug reveals a missing chip
+- [x] UncannyReturn — revisiting the mug reveals a missing chip
 
 ```js
 test('UncannyReturn: revisiting the mug reveals a missing chip', () => {

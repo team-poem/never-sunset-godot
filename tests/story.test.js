@@ -18,3 +18,10 @@ test('HomeMemory: washing requires three distinct baseline memories', () => {
   assert.deepEqual([...state.memories].sort(),['mark','mug','photo']);
   assert.equal(state.history.filter(x=>x==='mug').length,1);
 });
+
+test('UncannyReturn: revisiting the mug reveals a missing chip', () => {
+  assert.equal(run().mug_state,'left');
+  assert.equal(run(['mark','photo','mug','wash']).mug_state,'smooth');
+  assert.equal(run(baseline).phase,'dusk');
+  assert.equal(run([...baseline,'seal','cover']).mug_state,'right');
+});

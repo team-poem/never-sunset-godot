@@ -59,3 +59,10 @@ test('DarkApartment: ambient fill is reduced while practical light and the exist
   assert.equal(result.local_light,true);
   assert.equal(result.fov,68);
 });
+
+test('FindableDoorMark: the original door mark has a forgiving visible interaction target', () => {
+  const result=atmosphere('mark');
+  assert(result.width >= 0.25);
+  assert(result.height >= 0.5);
+  assert.equal(result.target_label,'문틀의 자국');
+});

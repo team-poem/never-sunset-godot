@@ -526,7 +526,8 @@ func _entrance() -> void:
 	_box("DoorLock", Vector3(-0.35, 1.1, 5.753), Vector3(0.12, 0.3, 0.035), "metal")
 	_box("DoorLever", Vector3(-0.27, 1.03, 5.71), Vector3(0.24, 0.035, 0.035), "steel")
 	_sphere("Peephole", Vector3(0, 1.62, 5.769), Vector3(0.018, 0.018, 0.009), "brass")
-	var mark: StaticBody3D = _target("mark", "문틀의 자국", Vector3(0.603, 1.39, 5.66), Vector3(0.14, 0.33, 0.055))
+	# Allow aim around the visible pencil marks without requiring pixel-perfect alignment.
+	var mark: StaticBody3D = _target("mark", "문틀의 자국", Vector3(0.603, 1.39, 5.66), Vector3(0.28, 0.55, 0.055))
 	_box("MarkedJamb", Vector3.ZERO, Vector3(0.13, 0.33, 0.042), "wood_dark", false, mark)
 	for i in range(3):
 		_box("PencilHeightMark", Vector3(-0.012, -0.10 + float(i) * 0.09, -0.025), Vector3(0.09 - float(i) * 0.015, 0.008, 0.008), "paper", false, mark)

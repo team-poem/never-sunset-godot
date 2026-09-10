@@ -281,7 +281,7 @@ test('DarkApartment: ambient fill is reduced while practical light and the exist
 });
 ```
 
-- [ ] FindableDoorMark — see the exact assertion below
+- [x] FindableDoorMark — see the exact assertion below
 
 ```js
 test('FindableDoorMark: the original door mark has a forgiving visible interaction target', () => {

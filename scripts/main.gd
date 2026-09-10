@@ -26,6 +26,7 @@ var pulse_sound: AudioStreamPlayer3D
 var curtain_sound: AudioStreamPlayer3D
 var subtitle_remaining: float = 0.0
 var narration_queue: Array = []
+var ending_notes: Array[String] = []
 var narration_recent: Dictionary = {}
 var contact_index: int = 0
 var extra_step_pending: bool = false
@@ -325,6 +326,12 @@ func _on_action(action: String):
 	if action.is_empty():
 		_return_to_game()
 		return
+	if action == "__ending_notes":
+		_show_page({"title":"문 앞에서 떠올린 것", "body":"\n\n".join(ending_notes), "choices":[{"text":"기록을 덮는다", "action":"__ending_return"}]}, "귀가 기록 / 남은 생각")
+		return
+	if action == "__ending_return":
+		_show_ending()
+		return
 	if action == "__restart":
 		_start_new()
 		return
@@ -342,6 +349,9 @@ func _on_action(action: String):
 		world.apply_story(story.phase, story.exposure, action in ["seal", "look"])
 	_update_hud()
 	if story.phase == "ending":
+		ending_notes.clear()
+		if not ui.subtitle.text.is_empty(): ending_notes.append(ui.subtitle.text)
+		for line in narration_queue: ending_notes.append(str(line.text))
 		_clear_narration()
 		pending_action = ""
 		_save()
@@ -424,6 +434,7 @@ func _on_command(command: String):
 
 func _start_new():
 	dialog_return_mode = "play"
+	ending_notes.clear()
 	_clear_narration()
 	narration_recent.clear()
 	story = State.new()
@@ -461,6 +472,11 @@ func _restore_snapshot(stored: Dictionary) -> bool:
 	if not stored.get("story") is Dictionary or not verified.restore_state(JSON.stringify(stored.story)):
 		return false
 	story = verified
+	ending_notes.clear()
+	var stored_notes = stored.get("ending_notes", [])
+	if story.phase == "ending" and stored_notes is Array and stored_notes.size() <= 128:
+		for note in stored_notes:
+			if note is String and note.length() <= 2000: ending_notes.append(note)
 	dialog_return_mode = "play"
 	pending_action = ""
 	_clear_narration()
@@ -491,7 +507,7 @@ func _restore_snapshot(stored: Dictionary) -> bool:
 
 func _capture_save() -> Dictionary:
 	var point = player.position
-	return {"story":story.snapshot(),"position":[point.x,point.y,point.z],"yaw":player.rotation.y,"pitch":player.pitch,"pending_action":pending_action,"narration_current":ui.subtitle.text,"narration_remaining":subtitle_remaining,"narration_queue":narration_queue.duplicate(true)}
+	return {"story":story.snapshot(),"position":[point.x,point.y,point.z],"yaw":player.rotation.y,"pitch":player.pitch,"pending_action":pending_action,"narration_current":ui.subtitle.text,"narration_remaining":subtitle_remaining,"narration_queue":narration_queue.duplicate(true),"ending_notes":ending_notes.duplicate()}
 
 func _save():
 	if qa_mode: return
@@ -539,7 +555,9 @@ func _open_notebook():
 
 func _show_ending():
 	var ending = Content.ending(story.snapshot())
-	_show_page({"title":ending.get("title",""),"body":ending.get("body","")+"\n\n"+ending.get("footnote",""),"choices":[{"text":"다시 귀가하기","action":"__restart"}]}, "귀가 기록 / 끝")
+	var choices = [{"text":"다시 귀가하기","action":"__restart"}]
+	if not ending_notes.is_empty(): choices.push_front({"text":"문 앞에서 떠올린 것", "action":"__ending_notes"})
+	_show_page({"title":ending.get("title",""),"body":ending.get("body","")+"\n\n"+ending.get("footnote",""),"choices":choices}, "귀가 기록 / 끝")
 	_apply_mode("ending")
 	ui.hud.hide()
 

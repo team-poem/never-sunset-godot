@@ -188,7 +188,7 @@ function look() {
 }
 ```
 
-- [ ] UncapturedLook — drag without pointer lock
+- [x] UncapturedLook — drag without pointer lock
 
 ```js
 test('UncapturedLook: dragging turns the camera when pointer lock is unavailable', () => {

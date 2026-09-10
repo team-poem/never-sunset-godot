@@ -34,7 +34,7 @@ func _ready():
 func _unhandled_input(event):
 	if not enabled:
 		return
-	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+	if event is InputEventMouseMotion and (Input.mouse_mode == Input.MOUSE_MODE_CAPTURED or event.button_mask & MOUSE_BUTTON_MASK_LEFT):
 		rotation.y -= event.relative.x * sensitivity
 		pitch = clampf(pitch - event.relative.y * sensitivity, -1.25, 1.25)
 		camera.rotation.x = pitch

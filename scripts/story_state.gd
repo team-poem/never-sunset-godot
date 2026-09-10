@@ -48,7 +48,10 @@ func apply_action(action: String) -> bool:
 	return true
 
 func restore_state(raw: String) -> bool:
-	var stored = JSON.parse_string(raw)
+	var parser = JSON.new()
+	if parser.parse(raw) != OK:
+		return false
+	var stored = parser.data
 	if not stored is Dictionary or stored.get("version") != 1:
 		return false
 	if not stored.get("history") is Array or stored.history.size() > 128:

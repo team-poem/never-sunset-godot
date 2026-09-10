@@ -200,17 +200,19 @@ func apply_story(phase: String, exposure: int) -> void:
 		return
 	var late: bool = phase in ["signal", "pulse", "escape"]
 	var sunset: bool = phase in ["dusk", "drain", "signal", "pulse", "escape"]
+	var curtains_closed: bool = phase in ["drain", "signal", "pulse", "escape"]
 	_make_mug(-1 if phase == "home" else (1 if late else 0))
 	if is_instance_valid(_bandage):
-		_bandage.position.x = 0.115 if late else -0.115
+		_bandage.position.x = -0.115 if phase == "home" else 0.115
 	for i in range(_curtains.size()):
 		_curtains[i].position.x = -3.51 if i == 0 else -1.49
-		_curtains[i].scale.x = 1.0 if sunset else 0.27
-		if not sunset:
+		_curtains[i].scale.x = 1.0 if curtains_closed else 0.27
+		if not curtains_closed:
 			_curtains[i].position.x = -4.65 if i == 0 else -0.35
 	_reverse_shadows.visible = sunset
-	_sink_pot.visible = phase in ["drain", "signal", "pulse", "escape"]
-	_wallpad_map.visible = phase in ["signal", "pulse", "escape"]
+	_sink_pot.visible = phase in ["signal", "pulse", "escape"]
+	_wallpad_map.visible = phase == "signal"
+	_wallpad_screen.material_override = _materials["ink"] if phase in ["pulse", "escape"] else _materials["screen"]
 	_tile_trace.visible = phase in ["pulse", "escape"]
 	_window_light.light_color = Color("db593b") if sunset else Color("d8b37c")
 	_window_light.light_energy = 0.8 + minf(float(exposure) * 0.07, 0.35) if sunset else 0.55

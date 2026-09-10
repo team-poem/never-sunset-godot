@@ -19,7 +19,7 @@ function run(actions=[], extra={}) {
 }
 ```
 
-- [ ] HomeMemory — washing requires three distinct baseline memories
+- [x] HomeMemory — washing requires three distinct baseline memories
 
 ```js
 test('HomeMemory: washing requires three distinct baseline memories', () => {

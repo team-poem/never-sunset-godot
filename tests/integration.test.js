@@ -27,3 +27,9 @@ test('PendingOutcome: save and resume preserves an unacknowledged narrative', ()
   assert.equal(result.mode,'dialog');
   assert.equal(result.title,'손을 닦았다');
 });
+
+test('MotionPreservesClues: camera bob setting does not remove world animation', () => {
+  const result=integration('motion_clue');
+  assert.equal(result.camera_bob,false);
+  assert.equal(result.world_advanced,true);
+});

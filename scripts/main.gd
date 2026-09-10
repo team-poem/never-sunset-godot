@@ -137,7 +137,7 @@ func _on_footstep(point: Vector3):
 
 func _process(delta):
 	if not is_instance_valid(ui): return
-	if motion_enabled and world.has_method("animate"):
+	if world.has_method("animate"):
 		world.animate(delta)
 	if subtitle_remaining > 0:
 		subtitle_remaining -= delta

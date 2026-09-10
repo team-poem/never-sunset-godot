@@ -165,7 +165,7 @@ test('PendingOutcome: save and resume preserves an unacknowledged narrative', ()
 });
 ```
 
-- [ ] MotionPreservesClues — actual scene integration
+- [x] MotionPreservesClues — actual scene integration
 
 ```js
 test('MotionPreservesClues: camera bob setting does not remove world animation', () => {

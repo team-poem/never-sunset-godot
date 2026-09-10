@@ -63,7 +63,7 @@ test('DrainRule: drain choices cannot skip the curtain or repeat consequences', 
 });
 ```
 
-- [ ] SignalRule — voice registration and silence reach pulse with distinct evidence
+- [x] SignalRule — voice registration and silence reach pulse with distinct evidence
 
 ```js
 test('SignalRule: voice registration and silence reach pulse with distinct evidence', () => {

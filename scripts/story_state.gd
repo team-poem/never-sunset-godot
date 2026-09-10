@@ -9,7 +9,7 @@ var voice: bool = false
 var notice: bool = false
 var visited_elevator: bool = false
 var ending: String = ""
-var rules: Dictionary = {"drain:touch":{"next":"signal","exposure":1},"dusk:look":{"next":"drain","exposure":1},"return:mug":{"next":"dusk"}, "dusk:seal":{"next":"drain"}, "drain:cover":{"next":"signal"},"home:wash": {"next": "return"}}
+var rules: Dictionary = {"signal:off":{"next":"pulse"}, "signal:answer":{"next":"pulse","exposure":1},"drain:touch":{"next":"signal","exposure":1},"dusk:look":{"next":"drain","exposure":1},"return:mug":{"next":"dusk"}, "dusk:seal":{"next":"drain"}, "drain:cover":{"next":"signal"},"home:wash": {"next": "return"}}
 
 func snapshot() -> Dictionary:
 	return {"version":1, "phase":phase, "memories":memories.duplicate(), "history":history.duplicate(), "exposure":exposure, "report":report, "voice":voice, "notice":notice, "visited_elevator":visited_elevator, "ending":ending}

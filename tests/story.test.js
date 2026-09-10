@@ -38,3 +38,12 @@ test('DrainRule: drain choices cannot skip the curtain or repeat consequences', 
   assert.equal(state.phase,'signal');
   assert.equal(state.exposure,1);
 });
+
+test('SignalRule: voice registration and silence reach pulse with distinct evidence', () => {
+  const silent=run([...baseline,'seal','cover','off']);
+  const voice=run([...baseline,'seal','cover','answer']);
+  assert.equal(silent.phase,'pulse');
+  assert.equal(voice.phase,'pulse');
+  assert.equal(voice.voice,true);
+  assert.equal(silent.voice,false);
+});

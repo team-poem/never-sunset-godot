@@ -47,5 +47,26 @@ func apply_action(action: String) -> bool:
 	history.append(action)
 	return true
 
-func restore_state(_raw: String) -> bool:
-	return false
+func restore_state(raw: String) -> bool:
+	var stored = JSON.parse_string(raw)
+	if not stored is Dictionary or stored.get("version") != 1:
+		return false
+	if not stored.get("history") is Array or stored.history.size() > 128:
+		return false
+	var replay = get_script().new()
+	for action in stored.history:
+		if not action is String or not replay.apply_action(action):
+			return false
+	var expected = replay.snapshot()
+	if JSON.parse_string(JSON.stringify(expected)) != stored:
+		return false
+	phase = replay.phase
+	memories = replay.memories.duplicate()
+	history = replay.history.duplicate()
+	exposure = replay.exposure
+	report = replay.report
+	voice = replay.voice
+	notice = replay.notice
+	visited_elevator = replay.visited_elevator
+	ending = replay.ending
+	return true

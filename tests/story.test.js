@@ -60,3 +60,10 @@ test('ThreeEndings: evidence and physically chosen key yield three endings', () 
   assert.equal(run([...safe,'exit','worn']).ending,'survivor');
   assert.equal(run([...safe,'archive','exit','new']).ending,'registered');
 });
+
+test('SaveReplay: valid saves replay and malformed or fabricated saves are rejected', () => {
+  const state=run([...safe,'archive'],{roundtrip:true});
+  assert.equal(state.restore_ok,true);
+  assert.equal(state.restored.phase,'landing');
+  for(const raw of ['{','{}','null',JSON.stringify({...state.restored,exposure:99}),JSON.stringify({...state.restored,history:['new']})]) assert.equal(run([],{restore:raw}).restore_ok,false);
+});

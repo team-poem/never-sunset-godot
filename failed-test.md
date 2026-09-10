@@ -97,7 +97,7 @@ test('ThreeEndings: evidence and physically chosen key yield three endings', () 
 });
 ```
 
-- [ ] SaveReplay — valid saves replay and malformed or fabricated saves are rejected
+- [x] SaveReplay — valid saves replay and malformed or fabricated saves are rejected
 
 ```js
 test('SaveReplay: valid saves replay and malformed or fabricated saves are rejected', () => {

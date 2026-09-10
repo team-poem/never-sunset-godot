@@ -79,3 +79,9 @@ test('PendingOutcomeV2: unread narration restores without freezing and expires w
   assert.equal(result.continuous,true);
   assert.equal(result.narration,true);
 });
+
+test('SpatialInteractionAudio: curtain contact plays a free recorded sound at the object and respects mute', () => {
+  const result=atmosphere('audio');
+  assert.equal(result.spatial_recording,true);
+  assert.equal(result.audible_when_muted,0);
+});

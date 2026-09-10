@@ -313,7 +313,7 @@ test('PendingOutcomeV2: unread narration restores without freezing and expires w
 });
 ```
 
-- [ ] SpatialInteractionAudio — sound belongs to the touched object and the sound preference
+- [x] SpatialInteractionAudio — sound belongs to the touched object and the sound preference
 
 ```js
 test('SpatialInteractionAudio: curtain contact plays a free recorded sound at the object and respects mute', () => {

@@ -23,6 +23,7 @@ var room_sound: AudioStreamPlayer
 var step_sound: AudioStreamPlayer3D
 var pipe_sound: AudioStreamPlayer3D
 var pulse_sound: AudioStreamPlayer3D
+var curtain_sound: AudioStreamPlayer3D
 var subtitle_remaining: float = 0.0
 var extra_step_pending: bool = false
 var extra_step_done: bool = false
@@ -116,6 +117,14 @@ func _setup_audio():
 		pulse_sound.global_position = world.targets["tile"].global_position
 	sound_sources.append(pulse_sound)
 	pulse_sound.finished.connect(func(): if is_instance_valid(pulse_sound) and story.phase in ["pulse","escape"]: pulse_sound.play())
+	curtain_sound = AudioStreamPlayer3D.new()
+	curtain_sound.stream = load("res://assets/vendor/kenney/rpg-audio/cloth1.ogg")
+	curtain_sound.volume_db = -13
+	curtain_sound.max_distance = 10
+	add_child(curtain_sound)
+	if world.targets.has("curtain"):
+		curtain_sound.global_position = world.targets["curtain"].global_position
+	sound_sources.append(curtain_sound)
 	_update_audio()
 
 func _update_audio():
@@ -313,6 +322,8 @@ func _on_action(action: String):
 		_create_world()
 	else:
 		world.apply_story(story.phase, story.exposure, action in ["seal", "look"])
+	if action in ["seal", "look"] and sound_enabled:
+		curtain_sound.play()
 	var page = Content.outcome(action, story.snapshot())
 	pending_action = action if story.phase != "ending" and not (action == "mug" and old_phase == "home") and not page.get("body", "").is_empty() else ""
 	if action in ["seal", "look", "cover", "off", "count"]: pending_action = ""

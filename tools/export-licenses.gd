@@ -8,5 +8,6 @@ func _initialize():
 	for name in licenses:
 		output.store_string(name + "\n" + str(licenses[name]) + "\n\n")
 	output.store_string("NOTO SANS KR\n\n" + FileAccess.get_file_as_string("res://assets/FONT-LICENSE.txt"))
+	output.store_string("\n\nKENNEY RPG AUDIO\n\n" + FileAccess.get_file_as_string("res://assets/vendor/kenney/rpg-audio/License.txt"))
 	output.close()
 	quit()

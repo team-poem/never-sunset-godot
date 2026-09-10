@@ -134,7 +134,7 @@ function integration(name) {
 }
 ```
 
-- [ ] CupEscapeMemory — actual scene integration
+- [x] CupEscapeMemory — actual scene integration
 
 ```js
 test('CupEscapeMemory: dismissing an inspected cup with Esc preserves the memory', () => {

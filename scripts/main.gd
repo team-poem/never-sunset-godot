@@ -31,6 +31,7 @@ var auto_save_time: float = 0.0
 var saved_available: bool = false
 var dialog_return_mode: String = "play"
 var pending_action: String = ""
+var held_mug: Node3D
 var qa_mode: bool = OS.get_cmdline_user_args().has("--qa-no-save")
 
 func _ready():
@@ -51,6 +52,7 @@ func _ready():
 	_update_hud()
 
 func _create_world():
+	_release_mug()
 	if player:
 		remove_child(player)
 		player.queue_free()
@@ -152,6 +154,9 @@ func _process(delta):
 		active_target = str(hit.collider.get_meta("interact_id"))
 		ui.set_target(str(hit.collider.get_meta("label", active_target)))
 	else: ui.set_target("")
+	if is_instance_valid(held_mug):
+		active_target = "mug"
+		ui.set_target("컵 내려놓기 · Esc")
 	var current_speed = Vector2(player.velocity.x, player.velocity.z).length()
 	if story.phase == "return" and previous_speed > 0.2 and current_speed < 0.03 and not extra_step_done and not extra_step_pending:
 		extra_step_pending = true
@@ -174,7 +179,8 @@ func _extra_step():
 func _unhandled_input(event):
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.physical_keycode == KEY_ESCAPE:
-			if mode == "play": _open_settings()
+			if mode == "play" and is_instance_valid(held_mug): _on_action("mug")
+			elif mode == "play": _open_settings()
 			elif mode == "inspect": _on_action("mug")
 			elif mode not in ["title","ending"]: _return_to_game()
 			get_viewport().set_input_as_handled()
@@ -221,6 +227,9 @@ func _show_page(page: Dictionary, tag: String = "1504호 / 관찰"):
 	_apply_mode("dialog")
 
 func _interact(id: String):
+	if is_instance_valid(held_mug):
+		_on_action("mug")
+		return
 	if id.is_empty(): return
 	if id == "mug":
 		_inspect_mug()
@@ -243,14 +252,24 @@ func _interact(id: String):
 	_show_page(Content.inspect(id, story.snapshot()))
 
 func _inspect_mug():
-	var state = story.snapshot()
-	var page = Content.inspect("mug", state)
-	page["choices"] = [{"text":"컵을 내려놓는다","action":"mug"}]
-	var model = world.create_mug_preview() if world.has_method("create_mug_preview") else Node3D.new()
-	ui.show_inspection(page, model)
-	_apply_mode("inspect")
+	held_mug = world.create_mug_preview()
+	held_mug.name = "HeldMug"
+	player.camera.add_child(held_mug)
+	held_mug.position = Vector3(0.22, -0.32, -0.55)
+	world.set_mug_held(true)
+	ui.show_game()
+	_apply_mode("play")
+	_say(Content.inspect("mug", story.snapshot()).get("body", "") + "\n[E / Esc] 컵을 내려놓는다.", 14.0)
+
+func _release_mug():
+	if not is_instance_valid(held_mug): return
+	held_mug.get_parent().remove_child(held_mug)
+	held_mug.queue_free()
+	held_mug = null
+	if is_instance_valid(world): world.set_mug_held(false)
 
 func _on_action(action: String):
+	if action == "mug": _release_mug()
 	if action.is_empty():
 		_return_to_game()
 		return

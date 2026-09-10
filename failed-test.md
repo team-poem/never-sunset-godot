@@ -224,7 +224,7 @@ test('WorldObservation: observing the mark and photo records memories without a 
 });
 ```
 
-- [ ] HeldCup — see the exact assertion below
+- [x] HeldCup — see the exact assertion below
 
 ```js
 test('HeldCup: the cup is held in the world with walking enabled and Esc records it', () => {

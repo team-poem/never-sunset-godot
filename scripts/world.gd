@@ -172,6 +172,9 @@ func create_mug_preview() -> Node3D:
 	preview.rotation = Vector3.ZERO
 	return preview
 
+func set_mug_held(held: bool) -> void:
+	if is_instance_valid(_cup): _cup.visible = not held
+
 func get_spawn() -> Vector3:
 	if _mode == "landing":
 		return Vector3(0, 0.05, 4.5)

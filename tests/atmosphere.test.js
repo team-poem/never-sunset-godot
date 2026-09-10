@@ -22,3 +22,10 @@ test('WorldObservation: observing the mark and photo records memories without a 
   assert(result.memories.includes('mark'));
   assert(result.memories.includes('photo'));
 });
+
+test('HeldCup: the cup is held in the world with walking enabled and Esc records it', () => {
+  const result=atmosphere('mug');
+  assert.equal(result.continuous,true);
+  assert(result.held_meshes > 0);
+  assert.equal(result.collected,true);
+});

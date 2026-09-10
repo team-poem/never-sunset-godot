@@ -300,7 +300,7 @@ test('RealSurfaceMaps: plaster wood and tile use real color and normal textures 
 });
 ```
 
-- [ ] PendingOutcomeV2 — explicit replacement for the legacy forced-dialogue requirement
+- [x] PendingOutcomeV2 — explicit replacement for the legacy forced-dialogue requirement
 
 ```js
 test('PendingOutcomeV2: unread narration restores without freezing and expires without a Continue click', () => {

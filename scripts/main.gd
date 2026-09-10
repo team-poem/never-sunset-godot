@@ -141,9 +141,13 @@ func _process(delta):
 	if not is_instance_valid(ui): return
 	if world.has_method("animate"):
 		world.animate(delta)
-	if subtitle_remaining > 0:
+	if subtitle_remaining > 0 and mode == "play":
 		subtitle_remaining -= delta
-		if subtitle_remaining <= 0: ui.subtitle.text = ""
+		if subtitle_remaining <= 0:
+			ui.subtitle.text = ""
+			if not pending_action.is_empty():
+				pending_action = ""
+				_save()
 	if mode != "play":
 		ui.set_target("")
 		return
@@ -220,7 +224,7 @@ func _return_to_game():
 	if story.phase == "ending":
 		_show_ending()
 		return
-	if not pending_action.is_empty():
+	if mode == "dialog" and not pending_action.is_empty():
 		pending_action = ""
 		_save()
 	ui.show_game()
@@ -318,7 +322,7 @@ func _on_action(action: String):
 	if story.phase == "ending":
 		_show_ending()
 		return
-	if action in ["seal", "look", "cover", "off", "count"]:
+	if action in ["wash", "seal", "look", "cover", "off", "count"]:
 		ui.show_game()
 		_apply_mode("play")
 		_say(page.get("body", ""), 14.0)
@@ -381,6 +385,8 @@ func _restore_snapshot(stored: Dictionary) -> bool:
 	story = verified
 	dialog_return_mode = "play"
 	pending_action = ""
+	subtitle_remaining = 0.0
+	ui.subtitle.text = ""
 	_create_world()
 	var position_data = stored.get("position", [])
 	if position_data is Array and position_data.size() == 3 and position_data.all(func(value): return value is float or value is int):
@@ -397,7 +403,9 @@ func _restore_snapshot(stored: Dictionary) -> bool:
 		pending_action = pending
 	_apply_mode("play")
 	if story.phase == "ending": _show_ending()
-	elif not pending_action.is_empty(): _show_page(Content.outcome(pending_action, story.snapshot()))
+	elif not pending_action.is_empty():
+		ui.show_game()
+		_say(Content.outcome(pending_action, story.snapshot()).get("body", ""), 14.0)
 	else: _return_to_game()
 	return true
 

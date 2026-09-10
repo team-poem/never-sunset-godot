@@ -70,3 +70,12 @@ test('FindableDoorMark: the original door mark has a forgiving visible interacti
 test('RealSurfaceMaps: plaster wood and tile use real color and normal textures in the scene', () => {
   assert.deepEqual(atmosphere('materials').mapped,[true,true,true]);
 });
+
+test('PendingOutcomeV2: unread narration restores without freezing and expires without a Continue click', () => {
+  const result=atmosphere('resume');
+  assert.equal(result.pending,'wash');
+  assert.equal(result.acknowledged,'');
+  assert.equal(result.restored,true);
+  assert.equal(result.continuous,true);
+  assert.equal(result.narration,true);
+});

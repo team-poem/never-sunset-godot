@@ -47,3 +47,10 @@ test('SignalRule: voice registration and silence reach pulse with distinct evide
   assert.equal(voice.voice,true);
   assert.equal(silent.voice,false);
 });
+
+test('EvacuationRule: pulse must be checked before leaving and lift is optional', () => {
+  assert.equal(run([...baseline,'seal','cover','off','leave']).phase,'pulse');
+  const state=run([...safe,'elevator','elevator']);
+  assert.equal(state.phase,'landing');
+  assert.equal(state.exposure,1);
+});

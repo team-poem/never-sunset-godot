@@ -76,7 +76,7 @@ test('SignalRule: voice registration and silence reach pulse with distinct evide
 });
 ```
 
-- [ ] EvacuationRule — pulse must be checked before leaving and lift is optional
+- [x] EvacuationRule — pulse must be checked before leaving and lift is optional
 
 ```js
 test('EvacuationRule: pulse must be checked before leaving and lift is optional', () => {

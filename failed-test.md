@@ -42,7 +42,7 @@ test('UncannyReturn: revisiting the mug reveals a missing chip', () => {
 });
 ```
 
-- [ ] CurtainRule — either curtain choice proceeds but looking leaves exposure
+- [x] CurtainRule — either curtain choice proceeds but looking leaves exposure
 
 ```js
 test('CurtainRule: either curtain choice proceeds but looking leaves exposure', () => {

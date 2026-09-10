@@ -25,3 +25,9 @@ test('UncannyReturn: revisiting the mug reveals a missing chip', () => {
   assert.equal(run(baseline).phase,'dusk');
   assert.equal(run([...baseline,'seal','cover']).mug_state,'right');
 });
+
+test('CurtainRule: either curtain choice proceeds but looking leaves exposure', () => {
+  assert.equal(run([...baseline,'seal']).phase,'drain');
+  assert.equal(run([...baseline,'seal']).exposure,0);
+  assert.equal(run([...baseline,'look']).exposure,1);
+});

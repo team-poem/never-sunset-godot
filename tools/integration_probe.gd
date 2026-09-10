@@ -44,4 +44,5 @@ func _run():
 	print("INTEGRATION_JSON:" + JSON.stringify(output))
 	game.queue_free()
 	await process_frame
+	await create_timer(0.2).timeout
 	quit(0)

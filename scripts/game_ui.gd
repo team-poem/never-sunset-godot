@@ -34,8 +34,15 @@ var look_sensitivity: float = 0.0023
 func _ready():
 	layer = 10
 	var theme = Theme.new()
-	theme.default_font = load("res://assets/korean.ttf")
+	var readable_font = FontVariation.new()
+	readable_font.base_font = load("res://assets/korean.ttf")
+	readable_font.variation_opentype = {TextServerManager.get_primary_interface().name_to_tag("wght"): 450.0}
+	theme.default_font = readable_font
 	theme.default_font_size = 18
+	theme.set_color("font_shadow_color", "Label", Color(0.02, 0.03, 0.02, 0.9))
+	theme.set_constant("shadow_offset_x", "Label", 1)
+	theme.set_constant("shadow_offset_y", "Label", 1)
+	theme.set_constant("shadow_outline_size", "Label", 0)
 	var button_style = StyleBoxFlat.new()
 	button_style.bg_color = Color("#273328")
 	button_style.border_color = Color("#777b5c")
@@ -102,7 +109,7 @@ func _build_hud():
 	clock_label.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
 	clock_label.position = Vector2(-150, 30)
 	hud.add_child(clock_label)
-	var hints = label("WASD 이동   ·   마우스 / 방향키 시선   ·   E 살펴보기   ·   J 수첩   ·   Esc 설정", 13, Color("#adb99e"))
+	var hints = label("WASD 이동   ·   마우스 / 드래그 / 방향키 시선   ·   E 살펴보기   ·   J 수첩   ·   Esc 설정", 13, Color("#c3ccb7"))
 	hints.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
 	hints.position = Vector2(38, -43)
 	hud.add_child(hints)

@@ -1,0 +1,36 @@
+# Godot edition verification · 2026-09-10
+
+## Automated regression suite
+
+`npm test`: 14 tests pass. Tests run the actual Godot 4.7.2 executable, rather than a JavaScript copy of the story state. Each case was demonstrated failing before implementation and retained verbatim. Covered: distinct baseline memories, replacement discovery, four rule sequences, evacuation prerequisites, three endings, replay-validated saves, terminal safety, cup Esc handling in both phases, unread narrative restoration, camera-bob setting, and drag look without pointer capture.
+
+## Independent integration review
+
+A read-only reviewer instantiated the actual main scene and passed 277 assertions. Every action went through `_interact` / `_on_action`; checked both safe and violating choices, archive/reread, optional elevator, all three endings, Esc/settings/notebook/title, and JSON snapshot restore at each outcome boundary. This verifies controller and scene integration, not a human playthrough.
+
+## World and physics
+
+All four spaces build. Seventeen target IDs are reachable by capsule-clear route and interaction ray in the world review. Held-input checks in the actual player moved 1.025 m over 30 W physics frames; pause displaced 0 m; right key turned 0.725 radians; 120 forward frames into the front door stopped at z=5.5285. Every apartment target was hittable from a standing position using the player's actual raycast.
+
+Causal scene checks initially failed nine assertions, then passed after fixing curtains, sink pot, wallpad and photo timing. Curtains close after sealing; pot appears after covering; aerial feed appears only during the signal; photograph changes after washing.
+
+## Browser / native execution
+
+- Native Compatibility renderer launched on Apple M5 Pro / Metal OpenGL, with real 3D output.
+- Release Web build exported successfully from Godot 4.7.2 single-thread templates.
+- In-app browser at 1280×720 and Chrome at its existing tall viewport displayed the scene and Korean title/dialogues. Fixed variable font weight using the integer OpenType tag, then visually verified legible final text.
+- Browser UI checked: start/prologue, pause/settings, notebook, reload/continue saved progress.
+- Final browser build: dragged the view from the hall toward the wallpad, saw the `[E] 월패드` raycast prompt, pressed E, and verified the matching inspection dialogue.
+- Automated browser pointer capture requests were rejected (`UnknownError` in embedded browser; `WrongDocumentError` in background Chrome). Added and browser-verified left-drag look fallback, with arrow-key look also available. Native/browser ordinary foreground pointer capture has not been manually certified.
+- CUA sends down/up as a short key press; held movement was therefore verified with real Godot physics frames, not represented as a completed browser walking playthrough. Endings were verified in actual scene integration, not manually walked in a browser.
+- Audio assets and phase routing loaded successfully. Subjective headphone balance and fear response require human feedback; they are not proven by automated checks.
+
+## Export and limits
+
+`build/web` contains HTML, JavaScript, WASM, game pack and license notices. `build/never-sunset-web.zip` is approximately 16 MiB. Static HTTP local serving works. No public Netlify/Vercel deployment has been performed. No mobile touch controls, cloud saves, or cross-browser Safari/Firefox certification.
+
+The game is a complete compact narrative implementation with original simple geometry; it is not photorealistic. The optional elevator is an observation scene, not a fully animated ride. Intended playtime is an estimate.
+
+## Diagnostic notes
+
+macOS sandboxed headless tests print a certificate lookup warning; this does not fail gameplay or tests. The early cup integration probe terminated before audio thread cleanup, producing two resource warnings; a 0.2-second teardown grace period removes them. Independent full-flow probes reported no gameplay errors.

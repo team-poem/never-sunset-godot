@@ -108,7 +108,7 @@ test('SaveReplay: valid saves replay and malformed or fabricated saves are rejec
 });
 ```
 
-- [ ] TerminalSafety — unknown actions and post-ending actions change nothing
+- [x] TerminalSafety — unknown actions and post-ending actions change nothing
 
 ```js
 test('TerminalSafety: unknown actions and post-ending actions change nothing', () => {

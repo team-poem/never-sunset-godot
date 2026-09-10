@@ -67,3 +67,10 @@ test('SaveReplay: valid saves replay and malformed or fabricated saves are rejec
   assert.equal(state.restored.phase,'landing');
   for(const raw of ['{','{}','null',JSON.stringify({...state.restored,exposure:99}),JSON.stringify({...state.restored,history:['new']})]) assert.equal(run([],{restore:raw}).restore_ok,false);
 });
+
+test('TerminalSafety: unknown actions and post-ending actions change nothing', () => {
+  const path=[...safe,'archive','exit','worn'];
+  const ending=run(path);
+  const repeated=run([...path,'new','wash','not_an_action']);
+  assert.deepEqual(repeated,ending);
+});

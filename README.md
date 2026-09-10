@@ -10,8 +10,8 @@ Open `project.godot` in Godot 4.7.2 and press F6 on `scenes/main.tscn`, or run `
 The project-local official macOS runtime is used by `tools/godot.sh`. On another machine install Godot and put `godot` on PATH, or set `GODOT_BIN` to its executable.
 
 - WASD: walk. Mouse or arrow keys: look. If mouse capture is unavailable, hold the left mouse button and drag.
-- E or left click: inspect the object under the crosshair.
-- Drag or arrow keys: rotate the held cup. Esc puts it down.
+- E or left click: perform the object’s primary action. Q: the offered risky alternative.
+- R: rotate the held cup. E or Esc puts it down; walking remains available.
 - J: remembered details. Esc: settings and pause. F: fullscreen.
 - Settings include sound and camera bob. Every essential sound clue has text.
 
@@ -21,7 +21,7 @@ Desktop keyboard and mouse are required. Touch controls are not implemented. Sav
 
 One apartment, an evacuation landing, a key threshold, and ending spaces; three endings; optional 1994 construction evidence. Changes to cup, photograph, doorway mark, light, drain, wallpad and bathroom pulse are tied to the story state. The original HTML game remains in the separate `../never-sunset` project.
 
-The visual style uses original low-poly geometry, restrained environmental sound and Korean written narrative. It has no voice acting, chase sequence, combat, or jumpscare system. The panoramic elevator is an optional visual observation at its doors, rather than a fully simulated elevator ride.
+The visual style combines original low-poly geometry with nine ambientCG surface maps and 27 Kenney recordings. Local lights, shadows and darker corners support Korean narration that runs in short queued subtitles while you walk. Curtains, the weighted drain cover and wallpad power have visible transitions. Only deliberately opened documents, settings and endings use panels. It has no voice acting, chase sequence, combat, or jumpscare system. The panoramic elevator is an optional visual observation at its doors, rather than a fully simulated elevator ride.
 
 ## Web build and sharing
 
@@ -36,7 +36,7 @@ Open http://localhost:4174 in a desktop browser. The localhost address works onl
 
 The export creates `build/web/` and `build/never-sunset-web.zip`, including third-party licenses. Upload the **contents of build/web**, keeping `index.html`, `.js`, `.wasm`, `.pck` and other files together, to a static host such as Netlify or Vercel. No server function is required. This repo does not include a cloud build pipeline or a live deployment. A Git-connected host needs a separate Godot build step because build output and engine binaries are ignored by Git.
 
-Single-thread Compatibility/WebGL 2 export does not require cross-origin isolation headers. Serve `.wasm` as `application/wasm`; use HTTPS on the public host. Opening the HTML directly with `file://` is not supported. Initial uncompressed runtime/game download is approximately 44 MB; hosting compression reduces network transfer.
+Single-thread Compatibility/WebGL 2 export does not require cross-origin isolation headers. Serve `.wasm` as `application/wasm`; use HTTPS on the public host. Opening the HTML directly with `file://` is not supported. The engine and texture pack are the main download; hosting compression reduces network transfer.
 
 ## Verification
 
@@ -44,6 +44,6 @@ Single-thread Compatibility/WebGL 2 export does not require cross-origin isolati
 npm test
 ```
 
-14 frozen Node tests execute the actual Godot state/controller; `failed-test.md` records verified initial failures. `QA.md` records additional scene, physics, browser and export checks and their limits. `tools/integration_probe.gd` uses `--qa-no-save` to avoid changing player progress.
+24 approved Node tests execute the actual Godot state/controller; `failed-test.md` records verified initial failures. `QA.md` records additional scene, physics, browser and export checks and their limits. `tools/integration_probe.gd` uses `--qa-no-save` to avoid changing player progress.
 
 Project design: `STORY_NOTES.md`, `WORLD_CONTRACT.md`, `WORLD_REVIEW.md`. Asset sources and licenses: `ASSET_SOURCES.md`, `assets/FONT-LICENSE.txt` and the generated Web license file.

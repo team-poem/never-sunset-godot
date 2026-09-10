@@ -18,3 +18,11 @@ Records are app-local because this model cannot write the workspace harness/brai
 
 ## Completion evidence
 See QA.md for exact tests, browser checks, sharing artifacts and limits. Browser pointer capture fallback was added after a reproduced browser failure. Public hosting remains a separate operation; the release folder and ZIP are prepared.
+
+## Approved atmosphere upgrade · 2026-09-10
+
+The human approved the eleven-entry atmosphere plan, its helper, one legacy test replacement, and the separate command-format baseline update. The runtime checkpointed all entries; the immutable acceptance suite now contains 24 cases.
+
+The approved manual scope is implemented: continuous paragraph narration and saved queues, direct E/Q progression, movable held cup with R rotation, physical curtain/cover/wallpad transitions, visible water/pulse cues, darker local lighting, clearer doorway clue, nine ambientCG maps and 27 Kenney recordings. First independent review findings were corrected in this same authorized scope. QA.md records concrete verification and limits; final acceptance remains bound to the harness's exact-HEAD review receipt.
+
+Durable app notes: a numeric test count did not catch lost input branches or modal regressions, so trace real input routes and queued narration across restart/save. Native staged rendering must disable diagnostic input and use an unfocusable window to prevent external input from invalidating frames. Verify downloaded texture appearance before importing it; an intact occupied apartment needs different surfaces than an abandoned building. License wording can remain unchanged while line endings are normalized for repository hygiene.

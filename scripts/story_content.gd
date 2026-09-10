@@ -10,7 +10,7 @@ static func objective(phase: String, memories: int) -> String:
 	match phase:
 		"home":
 			if memories >= 3: return "욕실에서 손을 씻고 차를 마시자."
-			return "익숙한 물건들을 둘러보자. 문틀, 가족사진, 식탁의 컵. (%d/3)" % memories
+			return "현관문 왼쪽 문틀 · 가족사진 · 식탁의 컵 (%d/3)" % memories
 		"return": return "손을 씻었다. 식탁으로 돌아가 컵을 들어 보자."
 		"dusk": return "거실이 아직 밝다. 베란다 커튼을 확인하자."
 		"drain": return "주방에서 물 빠지는 소리가 난다. 싱크대를 확인하자."

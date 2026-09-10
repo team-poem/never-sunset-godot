@@ -109,7 +109,7 @@ func _build_hud():
 	clock_label.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
 	clock_label.position = Vector2(-150, 30)
 	hud.add_child(clock_label)
-	var hints = label("WASD 이동   ·   마우스 / 드래그 / 방향키 시선   ·   E 살펴보기   ·   J 수첩   ·   Esc 설정", 13, Color("#c3ccb7"))
+	var hints = label("WASD 이동   ·   마우스 / 드래그 / 방향키 시선   ·   E 행동 · Q 다른 행동   ·   J 수첩   ·   Esc 설정", 13, Color("#c3ccb7"))
 	hints.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
 	hints.position = Vector2(38, -43)
 	hud.add_child(hints)
@@ -290,7 +290,7 @@ func show_inspection(page: Dictionary, model: Node3D):
 		model.rotation = Vector3.ZERO
 
 func show_settings():
-	show_page({"title":"잠시 멈추기", "body":"시간은 행동할 때만 흐릅니다.\n\nWASD 이동 · 마우스 또는 방향키 시선\nE / 왼쪽 클릭 살펴보기 · J 수첩 · F 전체 화면\n\n아래 설정은 저장됩니다.", "choices":[]}, "104 / 환경 설정")
+	show_page({"title":"잠시 멈추기", "body":"시간은 행동할 때만 흐릅니다.\n\nWASD 이동 · 마우스 또는 방향키 시선\nE / 왼쪽 클릭 행동 · Q 다른 행동 · R 컵 회전 · J 수첩 · F 전체 화면\n\n아래 설정은 저장됩니다.", "choices":[]}, "104 / 환경 설정")
 	var sound = CheckButton.new()
 	sound.text = "환경음"
 	sound.button_pressed = sound_enabled

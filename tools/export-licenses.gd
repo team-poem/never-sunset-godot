@@ -9,5 +9,7 @@ func _initialize():
 		output.store_string(name + "\n" + str(licenses[name]) + "\n\n")
 	output.store_string("NOTO SANS KR\n\n" + FileAccess.get_file_as_string("res://assets/FONT-LICENSE.txt"))
 	output.store_string("\n\nKENNEY RPG AUDIO\n\n" + FileAccess.get_file_as_string("res://assets/vendor/kenney/rpg-audio/License.txt"))
+	output.store_string("\n\nKENNEY IMPACT SOUNDS\n\n" + FileAccess.get_file_as_string("res://assets/vendor/kenney/impact-sounds/License.txt"))
+	output.store_string("\n\n" + FileAccess.get_file_as_string("res://assets/vendor/ambientcg/LICENSE.txt"))
 	output.close()
 	quit()

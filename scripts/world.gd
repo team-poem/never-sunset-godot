@@ -19,7 +19,14 @@ var _tile_trace: Node3D
 var _sunlight: DirectionalLight3D
 var _window_light: OmniLight3D
 var _archive_door: Node3D
-var _floor_noise: NoiseTexture2D
+var _practical_lights: Array[Light3D] = []
+var _action_tween: Tween
+var _action_kind: String = ""
+var _drain_flow: Node3D
+var _wash_stream: MeshInstance3D
+var _mark_digit: Label3D
+var _pad_message: Label3D
+var _pulse_tile: MeshInstance3D
 
 func build_apartment() -> void:
 	_mode = "apartment"
@@ -228,12 +235,20 @@ func apply_story(phase: String, exposure: int, animate_curtains: bool = false) -
 				panel.position.x = target_x
 				panel.scale.x = target_scale
 	_reverse_shadows.visible = sunset
-	_sink_pot.visible = phase in ["signal", "pulse", "escape"]
-	_wallpad_map.visible = phase == "signal"
-	_wallpad_screen.material_override = _materials["ink"] if phase in ["pulse", "escape"] else _materials["screen"]
+	_sink_pot.visible = true
+	if not (action_busy() and _action_kind in ["cover", "touch"]):
+		_sink_pot.position = Vector3(3.34 if late else 4.12, 1.025, -5.25)
+	_drain_flow.visible = phase == "drain" or (action_busy() and _action_kind in ["cover", "touch"])
+	if not (action_busy() and _action_kind in ["off", "answer"]):
+		_wallpad_map.visible = phase == "signal"
+		_wallpad_screen.material_override = _materials["ink"] if phase in ["pulse", "escape"] else _materials["screen"]
+	_mark_digit.scale.x = -1.0 if phase == "home" else 1.0
+	for light in _practical_lights:
+		var level = 0.18 if phase in ["pulse", "escape"] else (0.65 if sunset else 0.85)
+		light.light_energy = float(light.get_meta("normal_energy")) * level
 	_tile_trace.visible = phase in ["pulse", "escape"]
 	_window_light.light_color = Color("db593b") if sunset else Color("d8b37c")
-	_window_light.light_energy = 0.8 + minf(float(exposure) * 0.07, 0.35) if sunset else 0.55
+	_window_light.light_energy = (0.32 if curtains_closed else 0.75) + minf(float(exposure) * 0.05, 0.2) if sunset else 0.42
 	_sunlight.light_color = Color("df7351") if sunset else Color("aab8ac")
 	_sunlight.light_energy = 0.17 if sunset else 0.28
 
@@ -243,7 +258,50 @@ func animate(delta: float) -> void:
 		# A slow change in grout alignment, without camera motion or flashes.
 		_tile_trace.position.z = 5.675 + sin(_elapsed * 0.36) * 0.006
 	if _mode == "apartment" and is_instance_valid(_sink_pot) and _sink_pot.visible:
-		_sink_pot.rotation.z = sin(_elapsed * 0.48) * 0.006
+		_sink_pot.rotation.z = sin(_elapsed * 0.48) * 0.008 if _phase in ["signal", "pulse", "escape"] else 0.0
+	if is_instance_valid(_drain_flow) and _drain_flow.visible:
+		_drain_flow.rotation.y += delta * 0.95
+		_drain_flow.scale.x = 1.0 + sin(_elapsed * 0.8) * 0.12
+	if is_instance_valid(_pulse_tile):
+		var period = 5.4 if _phase == "escape" else 16.0
+		var beat = pow((1.0 + cos(_elapsed * TAU / period)) * 0.5, 14.0)
+		_pulse_tile.position.z = -beat * 0.012 if _phase in ["pulse", "escape"] else 0.0
+
+func action_busy() -> bool:
+	return curtains_closing() or (_action_tween != null and _action_tween.is_running())
+
+func begin_action(action: String) -> void:
+	_action_kind = action
+	if action in ["cover", "touch"]:
+		_action_tween = create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		_action_tween.tween_property(_sink_pot, "position", Vector3(3.73, 1.26, -5.18), 0.85)
+		_action_tween.tween_property(_sink_pot, "position", Vector3(3.34, 1.025, -5.25), 1.15)
+		_action_tween.tween_callback(func(): _drain_flow.hide())
+	elif action in ["off", "answer"]:
+		_pad_message.text = "1504 / 관찰" if action == "off" else "1504 / 응답"
+		_pad_message.show()
+		_action_tween = create_tween().set_parallel(true)
+		var screens: Array = [_wallpad_screen]
+		screens.append_array(_wallpad_map.get_children())
+		for screen in screens:
+			if not screen is MeshInstance3D: continue
+			var fading = screen.material_override.duplicate()
+			screen.material_override = fading
+			_action_tween.tween_property(fading, "albedo_color", Color("101813"), 3.0)
+			if fading.emission_enabled:
+				_action_tween.tween_property(fading, "emission_energy_multiplier", 0.0, 3.0)
+		_action_tween.chain().tween_callback(func():
+			_wallpad_map.hide()
+			_pad_message.hide()
+			_wallpad_screen.material_override = _materials["ink"])
+	elif action == "wash":
+		_wash_stream.show()
+		_action_tween = create_tween()
+		_action_tween.tween_interval(2.2)
+		_action_tween.tween_callback(func(): _wash_stream.hide())
+	elif action in ["count", "knock"]:
+		_action_tween = create_tween()
+		_action_tween.tween_interval(3.0)
 
 func _palette() -> void:
 	var colors: Dictionary = {
@@ -271,31 +329,17 @@ func _palette() -> void:
 	_materials["brass"].metallic = 0.45
 	_materials["ceramic"].roughness = 0.3
 	_materials["cup"].roughness = 0.28
-	# Small original seamless grain, shared by all boards. No external texture file.
-	var noise: FastNoiseLite = FastNoiseLite.new()
-	noise.seed = 104
-	noise.frequency = 0.075
-	noise.fractal_octaves = 3
-	_floor_noise = NoiseTexture2D.new()
-	_floor_noise.width = 128
-	_floor_noise.height = 128
-	_floor_noise.seamless = true
-	_floor_noise.noise = noise
-	var ramp: Gradient = Gradient.new()
-	ramp.set_color(0, Color(0.62, 0.56, 0.47))
-	ramp.set_color(1, Color(1, 0.94, 0.83))
-	_floor_noise.color_ramp = ramp
-	for key in ["floor_a", "floor_b", "floor_c"]:
-		_materials[key].albedo_texture = _floor_noise
-		_materials[key].uv1_scale = Vector3(1.0, 9.0, 1.0)
-	# Baked original surface detail, shared by the actual world meshes.
-	for key in ["plaster", "wood", "tile"]:
-		var material: StandardMaterial3D = _materials[key]
-		material.albedo_texture = load("res://assets/surfaces/%s_color.png" % key)
-		material.normal_texture = load("res://assets/surfaces/%s_normal.png" % key)
-		material.normal_enabled = true
-		material.normal_scale = 0.65
-	_materials["tile"].roughness = 0.38
+	# CC0 surfaces use world-space projection so small prop meshes do not repeat a whole floor.
+	for key in ["plaster", "green", "trim"]:
+		_surface(key, "Plaster001", 0.7, 0.16)
+	for key in ["wood", "wood_dark", "floor_a", "floor_b", "floor_c"]:
+		_surface(key, "WoodFloor051", 0.45, 0.35)
+	for key in ["tile", "tile_dark"]:
+		_surface(key, "Tiles133A", 0.48, 0.3)
+	_materials["tile"].roughness = 0.42
+	_materials["water"] = _materials["steel"].duplicate()
+	_materials["water"].albedo_color = Color("8ba8a3")
+	_materials["water"].roughness = 0.2
 	_emissive("warm", Color("ffe1a5"), 1.5)
 	_emissive("amber", Color("bd7b45"), 0.75)
 	_emissive("red_glow", Color("bf4f39"), 0.6)
@@ -308,6 +352,18 @@ func _palette() -> void:
 	shadow.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	shadow.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	_materials["shadow"] = shadow
+
+func _surface(key: String, asset: String, scale_value: float, depth: float) -> void:
+	var material: StandardMaterial3D = _materials[key]
+	var path = "res://assets/vendor/ambientcg/%s/%s_1K-JPG_" % [asset, asset]
+	material.albedo_texture = load(path + "Color.jpg")
+	material.normal_texture = load(path + "NormalGL.jpg")
+	material.roughness_texture = load(path + "Roughness.jpg")
+	material.normal_enabled = true
+	material.normal_scale = depth
+	material.uv1_triplanar = true
+	material.uv1_world_triplanar = true
+	material.uv1_scale = Vector3.ONE * scale_value
 
 func _emissive(key: String, color: Color, energy: float) -> void:
 	var material: StandardMaterial3D = StandardMaterial3D.new()
@@ -376,8 +432,8 @@ func _architecture() -> void:
 	_wall(Vector3(3.7, 1.4, 0.8), Vector3(4.6, 2.8, 0.16), "plaster")
 	_box("BathroomThreshold", Vector3(1.4, 0.025, 2.65), Vector3(0.2, 0.05, 1.29), "stone")
 	_ceiling_lamp(Vector3(0, 2.77, 3.2), 0.6, 3.6)
-	_ceiling_lamp(Vector3(3.7, 2.77, -3.4), 0.95, 4.6)
-	_ceiling_lamp(Vector3(3.7, 2.77, 3.1), 0.85, 4.1)
+	_ceiling_lamp(Vector3(3.7, 2.77, -3.4), 0.7, 4.0)
+	_ceiling_lamp(Vector3(3.7, 2.77, 3.1), 0.58, 3.6)
 
 func _living_room() -> void:
 	# Sofa backs against the west wall, leaving the middle of the room walkable.
@@ -442,6 +498,14 @@ func _kitchen() -> void:
 	_box("SinkBasin", Vector3(0, 0.012, 0), Vector3(0.64, 0.012, 0.43), "metal", false, sink)
 	_cylinder("Drain", Vector3(0, 0.022, 0.03), 0.063, 0.012, "ink", Vector3.ZERO, sink)
 	_cylinder("DrainGrid", Vector3(0, 0.03, 0.03), 0.041, 0.008, "steel", Vector3.ZERO, sink)
+	_drain_flow = Node3D.new()
+	_drain_flow.name = "SidewaysDrainCurrent"
+	_drain_flow.position = Vector3(3.34, 1.038, -5.22)
+	add_child(_drain_flow)
+	for i in range(9):
+		var angle = float(i) * TAU / 9.0
+		var ripple = _box("CurrentTrace", Vector3(cos(angle) * 0.105, 0, sin(angle) * 0.075), Vector3(0.06, 0.004, 0.012), "water", false, _drain_flow)
+		ripple.rotation.y = -angle
 	_faucet(Vector3(3.34, 1.02, -5.54), self)
 	_sink_pot = Node3D.new()
 	_sink_pot.name = "WeightedSinkLid"
@@ -494,6 +558,8 @@ func _bathroom() -> void:
 	_box("BasinInner", Vector3(3.35, 0.948, 1.4), Vector3(0.63, 0.014, 0.42), "steel")
 	var tap: StaticBody3D = _target("wash", "수도꼭지", Vector3(3.35, 1.08, 1.10), Vector3(0.25, 0.3, 0.3))
 	_faucet(Vector3(0, -0.11, 0), tap)
+	_wash_stream = _cylinder("RunningTapWater", Vector3(3.35, 1.075, 1.215), 0.012, 0.22, "water")
+	_wash_stream.hide()
 	_box("MirrorFrame", Vector3(3.35, 1.77, 0.908), Vector3(1.37, 1.08, 0.048), "wood_dark")
 	_box("SmokedMirror", Vector3(3.35, 1.77, 0.938), Vector3(1.27, 0.98, 0.015), "green_dark")
 	# Abstract muted bands avoid pretending a flat plane is a functional reflection.
@@ -512,7 +578,7 @@ func _bathroom() -> void:
 	_box("ShowerArm", Vector3(5.59, 2.13, 4.9), Vector3(0.46, 0.035, 0.035), "steel")
 	_cylinder("ShowerHead", Vector3(5.39, 2.10, 4.9), 0.13, 0.04, "steel")
 	var tile: StaticBody3D = _target("tile", "욕실 벽 타일", Vector3(3.2, 1.37, 5.835), Vector3(0.77, 0.86, 0.06))
-	_box("PulseTile", Vector3.ZERO, Vector3(0.76, 0.85, 0.055), "tile_dark", false, tile)
+	_pulse_tile = _box("PulseTile", Vector3.ZERO, Vector3(0.76, 0.85, 0.055), "tile_dark", false, tile)
 	_tile_trace = Node3D.new()
 	_tile_trace.name = "ImpossibleGroutTrace"
 	_tile_trace.position = Vector3(3.2, 1.37, 5.675)
@@ -539,6 +605,23 @@ func _entrance() -> void:
 	_box("MarkedJamb", Vector3.ZERO, Vector3(0.13, 0.33, 0.042), "wood_dark", false, mark)
 	for i in range(3):
 		_box("PencilHeightMark", Vector3(-0.012, -0.10 + float(i) * 0.09, -0.025), Vector3(0.09 - float(i) * 0.015, 0.008, 0.008), "paper", false, mark)
+	_mark_digit = Label3D.new()
+	_mark_digit.name = "RememberedReversedTwo"
+	_mark_digit.text = "2"
+	_mark_digit.font = load("res://assets/korean.ttf")
+	_mark_digit.font_size = 48
+	_mark_digit.pixel_size = 0.00075
+	_mark_digit.modulate = Color("c4b998")
+	_mark_digit.position = Vector3(0.615, 1.548, 5.628)
+	_mark_digit.rotation.y = PI
+	_mark_digit.no_depth_test = false
+	add_child(_mark_digit)
+	var mark_light = OmniLight3D.new()
+	mark_light.position = Vector3(0.32, 1.8, 5.1)
+	mark_light.light_color = Color("d7bf91")
+	mark_light.light_energy = 0.25
+	mark_light.omni_range = 1.3
+	add_child(mark_light)
 	_box("ShoeCabinet", Vector3(-0.94, 0.57, 5.18), Vector3(0.43, 1.14, 1.15), "trim", true)
 	_box("ShoeCabinetHandle", Vector3(-0.704, 0.69, 5.18), Vector3(0.025, 0.22, 0.034), "brass")
 	_shoe_pair(Vector3(0.47, 0.09, 4.85), 0.0)
@@ -557,6 +640,15 @@ func _entrance() -> void:
 	for i in range(12):
 		var angle: float = float(i) * TAU / 12.0
 		_box("AerialUnclosedContour", Vector3(-0.061, 0.023 + cos(angle) * 0.077, 0.02 + sin(angle) * 0.11), Vector3(0.004, 0.008, 0.02), "ink", false, _wallpad_map)
+	_pad_message = Label3D.new()
+	_pad_message.text = ""
+	_pad_message.font = load("res://assets/korean.ttf")
+	_pad_message.font_size = 28
+	_pad_message.pixel_size = 0.00065
+	_pad_message.position = Vector3(-0.069, -0.058, 0.03)
+	_pad_message.rotation.y = -PI / 2.0
+	pad.add_child(_pad_message)
+	_pad_message.hide()
 	# Notice board sits on the north-west-facing wall, at readable head height.
 	var notice: StaticBody3D = _target("notice", "야간 차광 안내문", Vector3(-1.182, 1.57, 2.01), Vector3(0.065, 0.60, 0.43))
 	_box("NoticeBacking", Vector3.ZERO, Vector3(0.06, 0.59, 0.42), "wood_dark", false, notice)
@@ -764,7 +856,10 @@ func _ceiling_lamp(at: Vector3, energy: float, light_range: float) -> void:
 	light.light_color = Color("ffe4b0")
 	light.light_energy = energy
 	light.omni_range = light_range
-	light.omni_attenuation = 1.2
+	light.shadow_enabled = true
+	light.omni_attenuation = 1.6
+	light.set_meta("normal_energy", energy)
+	_practical_lights.append(light)
 	add_child(light)
 
 func _floor_lamp(at: Vector3) -> void:
@@ -777,7 +872,10 @@ func _floor_lamp(at: Vector3) -> void:
 	light.light_color = Color("ffc984")
 	light.light_energy = 1.0
 	light.omni_range = 5.8
-	light.omni_attenuation = 1.5
+	light.shadow_enabled = true
+	light.omni_attenuation = 1.8
+	light.set_meta("normal_energy", 1.0)
+	_practical_lights.append(light)
 	add_child(light)
 
 func _desk_lamp(at: Vector3) -> void:

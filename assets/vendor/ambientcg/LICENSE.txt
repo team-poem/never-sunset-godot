@@ -1,0 +1,12 @@
+AMBIENTCG SURFACE TEXTURES
+
+Plaster001, WoodFloor051, and Tiles133A are by ambientCG and distributed under Creative Commons CC0 1.0 Universal.
+The selected 1K JPG Color, NormalGL, and Roughness maps are redistributed unchanged.
+
+Official license declaration: https://docs.ambientcg.com/license/
+CC0 legal text: https://creativecommons.org/publicdomain/zero/1.0/legalcode
+
+Asset pages:
+https://ambientcg.com/view?id=Plaster001
+https://ambientcg.com/view?id=WoodFloor051
+https://ambientcg.com/view?id=Tiles133A

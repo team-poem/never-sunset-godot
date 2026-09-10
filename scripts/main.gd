@@ -95,12 +95,13 @@ func _create_world():
 	player.sensitivity = look_sensitivity
 	player.footstep.connect(_on_footstep)
 	_setup_audio()
+	world.pulse_beat.connect(_on_wall_pulse)
 
 func _setup_audio():
 	room_sound = AudioStreamPlayer.new()
 	var room_stream: AudioStreamWAV = load("res://assets/audio/room.wav").duplicate()
 	room_stream.loop_mode = AudioStreamWAV.LOOP_FORWARD
-	room_stream.loop_end = int(room_stream.data.size() / 2)
+	room_stream.loop_end = int(round(room_stream.get_length() * room_stream.mix_rate))
 	room_sound.stream = room_stream
 	room_sound.volume_db = -15
 	add_child(room_sound)
@@ -122,7 +123,10 @@ func _setup_audio():
 	sound_sources.append(pipe_sound)
 	pipe_sound.finished.connect(func(): if is_instance_valid(pipe_sound) and story.phase == "drain": pipe_sound.play())
 	pulse_sound = AudioStreamPlayer3D.new()
-	pulse_sound.stream = load("res://assets/audio/pulse.wav")
+	# Use one original low beat; the visible wall supplies its timing.
+	var pulse_stream: AudioStreamWAV = load("res://assets/audio/pulse-beat.wav")
+	pulse_stream.loop_mode = AudioStreamWAV.LOOP_DISABLED
+	pulse_sound.stream = pulse_stream
 	pulse_sound.volume_db = -13
 	pulse_sound.max_distance = 14
 	pulse_sound.unit_size = 3
@@ -130,7 +134,6 @@ func _setup_audio():
 	if world.targets.has("tile"):
 		pulse_sound.global_position = world.targets["tile"].global_position
 	sound_sources.append(pulse_sound)
-	pulse_sound.finished.connect(func(): if is_instance_valid(pulse_sound) and story.phase in ["pulse","escape"]: pulse_sound.play())
 	curtain_sound = AudioStreamPlayer3D.new()
 	curtain_sound.stream = load("res://assets/vendor/kenney/rpg-audio/cloth1.ogg")
 	curtain_sound.volume_db = -13
@@ -153,8 +156,11 @@ func _update_audio():
 	if not room_sound.playing: room_sound.play()
 	if story.phase == "drain" and not pipe_sound.playing: pipe_sound.play()
 	elif story.phase != "drain": pipe_sound.stop()
-	if story.phase in ["pulse","escape"] and not pulse_sound.playing: pulse_sound.play()
-	elif story.phase not in ["pulse","escape"]: pulse_sound.stop()
+	if story.phase not in ["pulse","escape"]: pulse_sound.stop()
+
+func _on_wall_pulse():
+	if sound_enabled and mode not in ["title", "ending"] and story.phase in ["pulse", "escape"]:
+		pulse_sound.play()
 
 func _on_footstep(point: Vector3):
 	if sound_enabled and mode == "play":

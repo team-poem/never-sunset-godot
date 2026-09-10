@@ -2,6 +2,10 @@ extends Node3D
 ## Original procedural apartment. All measurements are in metres.
 ## Interaction metadata belongs to actual physical prop bodies, never room volumes.
 
+signal pulse_beat
+
+var _pulse_elapsed: float = 0.0
+var _pulse_index: int = -1
 var targets: Dictionary = {}
 var _materials: Dictionary = {}
 var _mode: String = "apartment"
@@ -209,6 +213,9 @@ func curtains_closing() -> bool:
 	return _curtain_tween != null and _curtain_tween.is_running()
 
 func apply_story(phase: String, exposure: int, animate_curtains: bool = false) -> void:
+	if phase != _phase:
+		_pulse_elapsed = 0.0
+		_pulse_index = -1
 	_phase = phase
 	if _mode != "apartment":
 		return
@@ -254,18 +261,24 @@ func apply_story(phase: String, exposure: int, animate_curtains: bool = false) -
 
 func animate(delta: float) -> void:
 	_elapsed += delta
-	if _mode == "apartment" and is_instance_valid(_tile_trace) and _tile_trace.visible:
-		# A slow change in grout alignment, without camera motion or flashes.
-		_tile_trace.position.z = 5.675 + sin(_elapsed * 0.36) * 0.006
 	if _mode == "apartment" and is_instance_valid(_sink_pot) and _sink_pot.visible:
 		_sink_pot.rotation.z = sin(_elapsed * 0.48) * 0.008 if _phase in ["signal", "pulse", "escape"] else 0.0
 	if is_instance_valid(_drain_flow) and _drain_flow.visible:
 		_drain_flow.rotation.y += delta * 0.95
 		_drain_flow.scale.x = 1.0 + sin(_elapsed * 0.8) * 0.12
 	if is_instance_valid(_pulse_tile):
-		var period = 5.4 if _phase == "escape" else 16.0
-		var beat = pow((1.0 + cos(_elapsed * TAU / period)) * 0.5, 14.0)
-		_pulse_tile.position.z = -beat * 0.012 if _phase in ["pulse", "escape"] else 0.0
+		if _phase in ["pulse", "escape"]:
+			_pulse_elapsed += delta
+			var period = 5.4 if _phase == "escape" else 16.0
+			var beat = pow((1.0 + cos(_pulse_elapsed * TAU / period)) * 0.5, 14.0)
+			_pulse_tile.position.z = -beat * 0.012
+			_tile_trace.position.z = 5.675 + beat * 0.006
+			var index = int(floor(_pulse_elapsed / period))
+			if index != _pulse_index:
+				_pulse_index = index
+				pulse_beat.emit()
+		else:
+			_pulse_tile.position.z = 0.0
 
 func action_busy() -> bool:
 	return curtains_closing() or (_action_tween != null and _action_tween.is_running())

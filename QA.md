@@ -14,6 +14,8 @@ The first independent review of `95e9bf2` identified four real gaps despite the 
 
 The second independent review of `ad3a213` found unread arrival narration could be lost when a key was selected quickly, and correctly kept full Web traversal open. The ending now preserves the active subtitle and queue as an optional “문 앞에서 떠올린 것” transcript; the transcript is saved, restored, and can return to the ending without restarting. The 38-check diagnostic verifies these boundaries. The remaining manual browser traversal criterion has not been replaced or waived.
 
+A third independent review of `145f359` found the visible wall cadence (16 seconds, then 5.4 seconds) contradicted the original six-second audio clip, which contained beats every 1.2 seconds. The wall now emits one shared beat event for surface motion and audio; a one-second original synthesized clip supplies exactly one beat. Audio settings do not introduce extra beats, and unmute waits for the next wall beat. The room loop endpoint also uses decoded sample frames rather than compressed byte count. The separate draft `pulse_review.gd` reproduced two failures before correction and now passes nine checks on the real OpenGL/Metal renderer and native audio backend, including cadence, mute, and the known 264600-frame ambience loop. It is diagnostic evidence, not a change to approved acceptance tests.
+
 The final gate and separate read-only completion review are revision-bound in `.git/sobaya/state.json`; use the harness status/review commands to inspect the current HEAD receipt. A commit or this document alone is not acceptance.
 
 ## Render and playback evidence

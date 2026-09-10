@@ -33,5 +33,6 @@ def pulse(t):
     beat=t%1.2
     return .12*math.exp(-beat*12)*math.sin(2*math.pi*38*beat)
 render("pulse.wav", 6, pulse)
+render("pulse-beat.wav", 1, pulse)
 render("ceramic.wav", .45, lambda t:.09*math.exp(-t*15)*(math.sin(2*math.pi*900*t)+.4*math.sin(2*math.pi*1320*t)))
-print("Generated five original WAV assets")
+print("Generated six original WAV assets")

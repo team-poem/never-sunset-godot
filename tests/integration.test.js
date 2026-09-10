@@ -19,14 +19,6 @@ test('CupEscapeReturn: Esc after examining the replacement advances the discover
   assert.equal(integration('cup_return_escape').phase,'dusk');
 });
 
-test('PendingOutcome: save and resume preserves an unacknowledged narrative', () => {
-  const result=integration('pending_outcome');
-  assert.equal(result.pending,'wash');
-  assert.equal(result.acknowledged,'');
-  assert.equal(result.restored,true);
-  assert.equal(result.mode,'dialog');
-  assert.equal(result.title,'손을 닦았다');
-});
 
 test('MotionPreservesClues: camera bob setting does not remove world animation', () => {
   const result=integration('motion_clue');

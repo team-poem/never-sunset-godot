@@ -66,3 +66,7 @@ test('FindableDoorMark: the original door mark has a forgiving visible interacti
   assert(result.height >= 0.5);
   assert.equal(result.target_label,'문틀의 자국');
 });
+
+test('RealSurfaceMaps: plaster wood and tile use real color and normal textures in the scene', () => {
+  assert.deepEqual(atmosphere('materials').mapped,[true,true,true]);
+});

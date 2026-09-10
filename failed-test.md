@@ -292,7 +292,7 @@ test('FindableDoorMark: the original door mark has a forgiving visible interacti
 });
 ```
 
-- [ ] RealSurfaceMaps — see the exact assertion below
+- [x] RealSurfaceMaps — see the exact assertion below
 
 ```js
 test('RealSurfaceMaps: plaster wood and tile use real color and normal textures in the scene', () => {

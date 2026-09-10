@@ -285,9 +285,17 @@ func _palette() -> void:
 	ramp.set_color(0, Color(0.62, 0.56, 0.47))
 	ramp.set_color(1, Color(1, 0.94, 0.83))
 	_floor_noise.color_ramp = ramp
-	for key in ["wood", "floor_a", "floor_b", "floor_c"]:
+	for key in ["floor_a", "floor_b", "floor_c"]:
 		_materials[key].albedo_texture = _floor_noise
 		_materials[key].uv1_scale = Vector3(1.0, 9.0, 1.0)
+	# Baked original surface detail, shared by the actual world meshes.
+	for key in ["plaster", "wood", "tile"]:
+		var material: StandardMaterial3D = _materials[key]
+		material.albedo_texture = load("res://assets/surfaces/%s_color.png" % key)
+		material.normal_texture = load("res://assets/surfaces/%s_normal.png" % key)
+		material.normal_enabled = true
+		material.normal_scale = 0.65
+	_materials["tile"].roughness = 0.38
 	_emissive("warm", Color("ffe1a5"), 1.5)
 	_emissive("amber", Color("bd7b45"), 0.75)
 	_emissive("red_glow", Color("bf4f39"), 0.6)

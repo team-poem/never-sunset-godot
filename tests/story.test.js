@@ -54,3 +54,9 @@ test('EvacuationRule: pulse must be checked before leaving and lift is optional'
   assert.equal(state.phase,'landing');
   assert.equal(state.exposure,1);
 });
+
+test('ThreeEndings: evidence and physically chosen key yield three endings', () => {
+  assert.equal(run([...safe,'archive','exit','worn']).ending,'witness');
+  assert.equal(run([...safe,'exit','worn']).ending,'survivor');
+  assert.equal(run([...safe,'archive','exit','new']).ending,'registered');
+});

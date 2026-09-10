@@ -87,7 +87,7 @@ test('EvacuationRule: pulse must be checked before leaving and lift is optional'
 });
 ```
 
-- [ ] ThreeEndings — evidence and physically chosen key yield three endings
+- [x] ThreeEndings — evidence and physically chosen key yield three endings
 
 ```js
 test('ThreeEndings: evidence and physically chosen key yield three endings', () => {

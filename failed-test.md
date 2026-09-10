@@ -247,7 +247,7 @@ test('MovingCurtain: primary interaction visibly closes curtains once while move
 });
 ```
 
-- [ ] DirectAppliances — see the exact assertion below
+- [x] DirectAppliances — see the exact assertion below
 
 ```js
 test('DirectAppliances: sink wallpad and tile advance through direct actions without confirmation pages', () => {

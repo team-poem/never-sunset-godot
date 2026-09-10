@@ -37,3 +37,10 @@ test('MovingCurtain: primary interaction visibly closes curtains once while move
   assert.equal(result.phase,'drain');
   assert.equal(result.commits,1);
 });
+
+test('DirectAppliances: sink wallpad and tile advance through direct actions without confirmation pages', () => {
+  const result=atmosphere('appliances');
+  assert.equal(result.continuous,true);
+  assert.deepEqual(result.phases,['signal','pulse','escape']);
+  assert.equal(result.exposure,0);
+});

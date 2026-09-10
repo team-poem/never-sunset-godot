@@ -231,6 +231,16 @@ func _interact(id: String):
 		_on_action("mug")
 		return
 	if id.is_empty(): return
+	if id in ["sink", "wallpad", "tile"]:
+		if id == "sink" and story.phase == "drain":
+			_on_action("cover")
+		elif id == "wallpad" and story.phase == "signal":
+			_on_action("off")
+		elif id == "tile" and story.phase == "pulse":
+			_on_action("count")
+		else:
+			_say(Content.inspect(id, story.snapshot()).get("body", ""), 14.0)
+		return
 	if id == "curtain":
 		if story.phase == "dusk":
 			_on_action("seal")
@@ -296,14 +306,14 @@ func _on_action(action: String):
 		world.apply_story(story.phase, story.exposure, action == "seal")
 	var page = Content.outcome(action, story.snapshot())
 	pending_action = action if story.phase != "ending" and not (action == "mug" and old_phase == "home") and not page.get("body", "").is_empty() else ""
-	if action == "seal": pending_action = ""
+	if action in ["seal", "cover", "off", "count"]: pending_action = ""
 	_save()
 	_update_hud()
 	_update_audio()
 	if story.phase == "ending":
 		_show_ending()
 		return
-	if action == "seal":
+	if action in ["seal", "cover", "off", "count"]:
 		ui.show_game()
 		_apply_mode("play")
 		_say(page.get("body", ""), 14.0)

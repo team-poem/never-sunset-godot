@@ -303,7 +303,7 @@ func _start_new():
 	_save()
 	ui.show_game()
 	_apply_mode("play")
-	_show_page({"title":"오늘도, 같은 집.","body":"야근을 마치고 돌아왔다. 보리차 냄새가 났다.\n\n열쇠는 신발장 오른쪽 접시에 놓았다. 손을 씻기 전에 집 안을 잠깐 둘러보기로 했다.\n\nWASD로 걷고 마우스로 둘러봅니다.\n사물 가까이에서 E를 눌러 살펴보세요.","choices":[{"text":"신발을 벗는다","action":""}]}, "귀가 / 20:17")
+	_say("야근을 마치고 돌아왔다. 보리차 냄새가 났다.\n열쇠는 신발장 오른쪽 접시에 놓았다. 손을 씻기 전에 집 안을 잠깐 둘러보기로 했다.", 14.0)
 
 func _valid_save():
 	if qa_mode: return null

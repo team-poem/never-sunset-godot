@@ -203,7 +203,7 @@ function atmosphere(name) {
 }
 ```
 
-- [ ] ContinuousEntry — see the exact assertion below
+- [x] ContinuousEntry — see the exact assertion below
 
 ```js
 test('ContinuousEntry: homecoming begins with narration while walking remains available', () => {

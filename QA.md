@@ -33,6 +33,8 @@ The game is a complete compact narrative implementation with original simple geo
 
 ## Diagnostic notes
 
+ContinuousEntry worker check (2026-09-10): reproduced the approved assertion failure (`continuous` was false). Replaced only the opening dialogue with 14-second homecoming subtitles through the existing `_say` method. `npm test` passes all 14 currently materialized tests, including ContinuousEntry. `npm run export:web` completed its editor import and single-thread Web export with exit code 0. Sandbox restrictions produced log/editor-settings write errors and the existing certificate warning. A new local server attempt (`PORT=4186 node tools/serve.mjs`) failed with `listen EPERM`; browser approval review then denied access to the existing localhost:4174 URL. Browser gameplay verification of this change remains unavailable; the actual-scene test confirms play mode, enabled movement, no visible modal, and populated narration. No approved inputs or checkboxes were changed.
+
 macOS sandboxed headless tests print a certificate lookup warning; this does not fail gameplay or tests. The early cup integration probe terminated before audio thread cleanup, producing two resource warnings; a 0.2-second teardown grace period removes them. Independent full-flow probes reported no gameplay errors.
 
 ## Final gate

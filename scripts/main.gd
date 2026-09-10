@@ -153,6 +153,8 @@ func _process(delta):
 	if not hit.is_empty() and hit.collider.has_meta("interact_id"):
 		active_target = str(hit.collider.get_meta("interact_id"))
 		ui.set_target(str(hit.collider.get_meta("label", active_target)))
+		if active_target == "curtain" and story.phase == "dusk":
+			ui.set_target("암막 커튼 · [Q] 틈으로 바깥을 본다")
 	else: ui.set_target("")
 	if is_instance_valid(held_mug):
 		active_target = "mug"
@@ -190,6 +192,9 @@ func _unhandled_input(event):
 			get_viewport().set_input_as_handled()
 		elif event.physical_keycode == KEY_E and mode == "play":
 			_interact(active_target)
+			get_viewport().set_input_as_handled()
+		elif event.physical_keycode == KEY_Q and mode == "play" and active_target == "curtain" and story.phase == "dusk" and not is_instance_valid(held_mug):
+			_on_action("look")
 			get_viewport().set_input_as_handled()
 		elif event.physical_keycode == KEY_F:
 			var fullscreen = DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN
@@ -303,17 +308,17 @@ func _on_action(action: String):
 	if old_phase != story.phase and story.phase in ["landing","threshold","ending"]:
 		_create_world()
 	else:
-		world.apply_story(story.phase, story.exposure, action == "seal")
+		world.apply_story(story.phase, story.exposure, action in ["seal", "look"])
 	var page = Content.outcome(action, story.snapshot())
 	pending_action = action if story.phase != "ending" and not (action == "mug" and old_phase == "home") and not page.get("body", "").is_empty() else ""
-	if action in ["seal", "cover", "off", "count"]: pending_action = ""
+	if action in ["seal", "look", "cover", "off", "count"]: pending_action = ""
 	_save()
 	_update_hud()
 	_update_audio()
 	if story.phase == "ending":
 		_show_ending()
 		return
-	if action in ["seal", "cover", "off", "count"]:
+	if action in ["seal", "look", "cover", "off", "count"]:
 		ui.show_game()
 		_apply_mode("play")
 		_say(page.get("body", ""), 14.0)

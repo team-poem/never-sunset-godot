@@ -44,3 +44,11 @@ test('DirectAppliances: sink wallpad and tile advance through direct actions wit
   assert.deepEqual(result.phases,['signal','pulse','escape']);
   assert.equal(result.exposure,0);
 });
+
+test('RiskyChoice: Q at the curtain keeps the risky path available without a choice modal', () => {
+  const result=atmosphere('alternate');
+  assert.equal(result.continuous,true);
+  assert.equal(result.phase,'drain');
+  assert.equal(result.exposure,1);
+  assert.equal(result.look_count,1);
+});

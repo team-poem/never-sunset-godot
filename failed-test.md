@@ -258,7 +258,7 @@ test('DirectAppliances: sink wallpad and tile advance through direct actions wit
 });
 ```
 
-- [ ] RiskyChoice — see the exact assertion below
+- [x] RiskyChoice — see the exact assertion below
 
 ```js
 test('RiskyChoice: Q at the curtain keeps the risky path available without a choice modal', () => {

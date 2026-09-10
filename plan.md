@@ -30,3 +30,9 @@ Durable app notes: a numeric test count did not catch lost input branches or mod
 The second independent review found unread narration loss at the ending boundary. Active and queued paragraphs now survive as an optional saved ending transcript; the unchanged 24-case suite and 38-check scene diagnostic pass. Full Web traversal through all three endings remains an outstanding approved manual criterion. Short browser key events do not sustain physics movement, and CUA denies native Codex-app access. No acceptance waiver is inferred from this tool limitation.
 
 A third independent review identified contradictory wall/audio cadence. The wall now owns the slow/accelerated beat event and triggers a single original synthesized beat; a nine-check native diagnostic verifies both rates, mute/unmute, and correct decoded-frame ambience looping. Do not derive a WAV loop endpoint from compressed byte length. The 24 approved tests remain unchanged.
+
+## Continued loop · 2026-09-10
+
+Independent review call 18 found no additional code defect in e3ddf79; the sole remaining gate is the explicitly approved full Web traversal, whose proposed amendment remains unapproved. Browser input alternatives were attempted in both in-app Chromium and Chrome without establishing sustained movement. The game source, approved criteria, and frozen tests remain unchanged.
+
+A supplemental draft physical traversal now covers all three endings by actual production movement, collision, ray aim and E/Q/Esc input: 37 targets, 202.22 metres, no teleports or direct story mutation, exit 0. The optional archive uses its existing UI button signal. Full browser play verification is still outstanding. Durable lesson: round a navigation start to a collision-free point rather than a wall-adjacent grid cell after player coasting; fixed-FPS diagnostics need real cleanup time for asynchronously mixed audio.

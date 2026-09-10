@@ -52,7 +52,7 @@ test('CurtainRule: either curtain choice proceeds but looking leaves exposure', 
 });
 ```
 
-- [ ] DrainRule — drain choices cannot skip the curtain or repeat consequences
+- [x] DrainRule — drain choices cannot skip the curtain or repeat consequences
 
 ```js
 test('DrainRule: drain choices cannot skip the curtain or repeat consequences', () => {

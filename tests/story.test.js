@@ -31,3 +31,10 @@ test('CurtainRule: either curtain choice proceeds but looking leaves exposure', 
   assert.equal(run([...baseline,'seal']).exposure,0);
   assert.equal(run([...baseline,'look']).exposure,1);
 });
+
+test('DrainRule: drain choices cannot skip the curtain or repeat consequences', () => {
+  assert.equal(run([...baseline,'cover']).phase,'dusk');
+  const state=run([...baseline,'seal','touch','touch']);
+  assert.equal(state.phase,'signal');
+  assert.equal(state.exposure,1);
+});
